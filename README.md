@@ -24,11 +24,17 @@ This sprint challenge is divided up into three parts:  Hash tables coding, block
 
 Explain in detail the workings of a dynamic array:
 * What is the runtime complexity to access an array, add or remove from the front, and add or remove from the back?
+  - Runtime complexity to access an array: O(1). If you know the index you're searching for, it is trivial to access that exact pointer in memory.
+  - Runtime complexity to update the front: O(n). Every element in the array has to be shifted left or right as you remove or add, respectively.
+  - Runtime complexity to update the back: 0(1). Only one pointer has to be updated when you add or remove from the back.
 * What is the worse case scenario if you try to extend the storage size of a dynamic array?
+  - The dynamic array can extend by too great a factor in the case where you only want to extend the array to fit one more element. This would result in a large amount of memory wasted.
 
 Explain how a blockchain is structured. What are the blocks, what is the chain? How is the data organized?
- 
+  - A block is a chunk of data containing transactions of a cryptocurrency, a timestamp, and a cryptographic hash of the previous block. The blocks are organized in a tree of nodes pointing back to the root block. This tree is called the blockchain. It is secure by design due to the high cost of generating a valid hash. It is also a public ledger of all transactions, ensuring consensus of ownership.
+
 Explain how proof of work functions. How does it operate. How does this protect the chain from attack. What kind of attack is possible?
+  - Proof of work ensures that the cryptocurrency is secure, scarce and rivalrous (each coin has one owner). A miner must compute the cryptographic hash first in order to receive a reward (aka, mine a coin). This means that miners are incentivized to use compute to secure the latest block of transactions. The resulting blocks are verified in a distributed system by a P2P protocol that compares transaction records across the network. This prevents a double-spending attack in which transaction records sent to different nodes allow a user to spend the same money multiple times.
 
 ## Project Set Up
 

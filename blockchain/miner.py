@@ -10,7 +10,7 @@ from timeit import default_timer as timer
 import random
 
 
-def proof_of_work(last_proof):
+def proof_of_work(last_proof, time_limit):
     """
     Multi-Ouroboros of Work Algorithm
     - Find a number p' such that the last six digits of hash(p) are equal
@@ -18,6 +18,14 @@ def proof_of_work(last_proof):
     - IE:  last_hash: ...AE9123456, new hash 123456888...
     - p is the previous proof, and p' is the new proof
     - Use the same method to generate SHA-256 hashes as the examples in class
+    """
+
+    """
+    This mining algorithm uses a couple tricks to speed up mining.
+    1. It only computes the matching condition once.
+    2. It prepends a (probably) unique string to randomize the search.
+    3. It stops mining after a time limit, which is set dynamically based
+        on past late submissions.
     """
 
     start = timer()
@@ -28,11 +36,11 @@ def proof_of_work(last_proof):
     match = str(guess_hash)[-6:]
     proof = 0
     while not valid_proof(proof, match):
-        if timer() - start > 5:
-            return None
+        if timer() - start > time_limit:
+            return None, None
         proof += 1
     print("Proof found: " + str(proof) + " in " + str(timer() - start))
-    return "GOOGLE_JURY_NULLIFICATION"+str(proof)
+    return "GOOGLE_JURY_NULLIFICATION"+str(proof), timer() - start
 
 
 def valid_proof(proof, match):
@@ -66,11 +74,12 @@ if __name__ == '__main__':
         print("ERROR: You must change your name in `my_id.txt`!")
         exit()
     # Run forever until interrupted
+    time_limit = 20
     while True:
         # Get the last proof from the server
         r = requests.get(url=node + "/last_proof")
         data = r.json()
-        new_proof = proof_of_work(data.get('proof'))
+        new_proof, proof_time = proof_of_work(data.get('proof'), time_limit)
         if new_proof == None:
             continue
 
@@ -83,4 +92,6 @@ if __name__ == '__main__':
             coins_mined += 1
             print("Total coins mined: " + str(coins_mined))
         else:
+            time_limit = min(time_limit, proof_time)
             print(data.get('message'))
+            print("new time limit:", time_limit)
